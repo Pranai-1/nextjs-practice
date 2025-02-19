@@ -4,24 +4,28 @@
 import { revalidateTag } from "next/cache";
 import DummyData from "../components/DummyData";
 
-export default async function Page() {
-    const limit=2  //it doesn't work like this because fetch has to be made with similar params
-  // Fetch data from a dummy API with caching options and tags
-  const res = await fetch(`https://fakeapi.net/products?page=1&limit=${limit}`, {
- cache:"force-cache",
-    next: {
-        
-    //  revalidate: 60, // revalidate every 60 seconds
-      tags: ['data-amount'], // tag this cache entry
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    
-    },
-  });
 
-  const {data} = await res.json();
-  console.log(data)
+
+async  function getData(){
+ const res = await fetch(`https://67b5992507ba6e59083d91f0.mockapi.io/cache/users`, {
+   cache:"force-cache",
+   next: {
+    revalidate: 5, // for example, cache for 60 seconds
+    tags: ['data-amount'],
+  },
+   headers: {
+     'Content-Type': 'application/json',
+   },
+ });
+ const data = await res.json();
+ return data
+}
+
+
+export default async function Page() {
+
+
+const data=await getData()
 const revalidateAction=async()=>{
     "use server"
     revalidateTag('data-amount')
